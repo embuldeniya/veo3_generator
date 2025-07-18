@@ -1,0 +1,337 @@
+
+``` x:@IamEmily2050
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinematic Prompt Generator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+        :root {
+            --bg-color: #1a1a1a;
+            --surface-color: #2a2a2a;
+            --primary-color: #007bff;
+            --primary-hover: #0056b3;
+            --text-color: #e0e0e0;
+            --label-color: #a0a0a0;
+            --border-color: #444;
+            --output-bg: #111;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 2rem;
+        }
+
+        h1 {
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        p.subtitle {
+            text-align: center;
+            color: var(--label-color);
+            margin-top: 0;
+            margin-bottom: 3rem;
+        }
+
+        #prompt-form {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        fieldset {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        legend {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--primary-color);
+            padding: 0 0.5rem;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 0.5rem;
+            color: var(--label-color);
+            font-size: 0.9rem;
+        }
+
+        input[type="text"],
+        textarea {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.75rem;
+            color: var(--text-color);
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .button-container {
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        #output-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+        }
+        
+        #output-container h2 {
+            font-weight: 500;
+        }
+
+        pre {
+            background-color: var(--output-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.9rem;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        @media (max-width: 900px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Cinematic Prompt Generator</h1>
+    <p class="subtitle">Fill in the details below to generate a structured JSON prompt.</p>
+
+    <form id="prompt-form" onsubmit="event.preventDefault(); generateJson();">
+        <div class="form-grid">
+            <fieldset>
+                <legend>Shot</legend>
+                <div class="input-group">
+                    <label for="shot_composition">Composition</label>
+                    <input type="text" id="shot_composition" placeholder="Medium shot, 35mm lens...">
+                </div>
+                <div class="input-group">
+                    <label for="shot_camera_motion">Camera Motion</label>
+                    <input type="text" id="shot_camera_motion" placeholder="Static camera with slight handheld sway...">
+                </div>
+                <div class="input-group">
+                    <label for="shot_frame_rate">Frame Rate</label>
+                    <input type="text" id="shot_frame_rate" placeholder="24fps">
+                </div>
+                <div class="input-group">
+                    <label for="shot_film_grain">Film Grain</label>
+                    <input type="text" id="shot_film_grain" placeholder="Subtle Kodak Vision3 250D grain...">
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Subject</legend>
+                <div class="input-group">
+                    <label for="subject_description">Description</label>
+                    <textarea id="subject_description" placeholder="A young woman with pale skin..."></textarea>
+                </div>
+                <div class="input-group">
+                    <label for="subject_wardrobe">Wardrobe</label>
+                    <input type="text" id="subject_wardrobe" placeholder="White dress shirt neatly tucked...">
+                </div>
+                <div class="input-group">
+                    <label for="subject_character_motion">Character Motion</label>
+                    <input type="text" id="subject_character_motion" placeholder="She raises both hands playfully...">
+                </div>
+            </fieldset>
+            
+            <fieldset>
+                <legend>Scene</legend>
+                <div class="input-group">
+                    <label for="scene_location">Location</label>
+                    <textarea id="scene_location" placeholder="Minimalist indoor studio hallway..."></textarea>
+                </div>
+                <div class="input-group">
+                    <label for="scene_time_of_day">Time of Day</label>
+                    <input type="text" id="scene_time_of_day" placeholder="Midday with soft diffused light">
+                </div>
+                <div class="input-group">
+                    <label for="scene_environment">Environment</label>
+                    <input type="text" id="scene_environment" placeholder="Clean neutral-toned space...">
+                </div>
+            </fieldset>
+            
+            <fieldset>
+                <legend>Visual Details</legend>
+                <div class="input-group">
+                    <label for="visual_details_action">Action</label>
+                    <textarea id="visual_details_action" placeholder="As the woman strikes her playful claw pose..."></textarea>
+                </div>
+                <div class="input-group">
+                    <label for="visual_details_props">Props</label>
+                    <input type="text" id="visual_details_props" placeholder="Visible door with white 'DO NOT OPEN' label...">
+                </div>
+            </fieldset>
+            
+            <fieldset>
+                <legend>Cinematography & Audio</legend>
+                 <div class="input-group">
+                    <label for="cinematography_lighting">Lighting</label>
+                    <input type="text" id="cinematography_lighting" placeholder="Soft top-lighting with a hint of bounce...">
+                </div>
+                <div class="input-group">
+                    <label for="cinematography_tone">Tone</label>
+                    <input type="text" id="cinematography_tone" placeholder="Lighthearted, whimsical, charming...">
+                </div>
+                 <div class="input-group">
+                    <label for="audio_ambient">Ambient Sound</label>
+                    <input type="text" id="audio_ambient" placeholder="Soft studio room tone, faint echo...">
+                </div>
+                <div class="input-group">
+                    <label for="audio_sound_effects">Sound Effects</label>
+                    <input type="text" id="audio_sound_effects" placeholder="Light chime, soft digital pop...">
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Color & Dialogue</legend>
+                 <div class="input-group">
+                    <label for="color_palette">Color Palette</label>
+                    <input type="text" id="color_palette" placeholder="Neutral grays with pops of black and white...">
+                </div>
+                 <div class="input-group">
+                    <label for="dialogue_character">Dialogue Character</label>
+                    <input type="text" id="dialogue_character" placeholder="Woman">
+                </div>
+                <div class="input-group">
+                    <label for="dialogue_line">Dialogue Line</label>
+                    <input type="text" id="dialogue_line" placeholder='(cheerfully, winking) "Rawr! I\'m pixel-perfect!"'>
+                </div>
+                <div class="checkbox-group">
+                    <label for="dialogue_subtitles">Subtitles Enabled</label>
+                    <input type="checkbox" id="dialogue_subtitles">
+                </div>
+            </fieldset>
+        </div>
+        
+        <div class="button-container">
+            <button type="submit">Generate JSON Prompt</button>
+        </div>
+    </form>
+
+    <div id="output-container">
+        <h2>Generated JSON</h2>
+        <pre><code id="json-output">// Your generated JSON will appear here...</code></pre>
+    </div>
+
+    <script>
+        function generateJson() {
+            // Create a structured JavaScript object by getting values from the form inputs
+            const promptData = {
+                shot: {
+                    composition: document.getElementById('shot_composition').value,
+                    camera_motion: document.getElementById('shot_camera_motion').value,
+                    frame_rate: document.getElementById('shot_frame_rate').value,
+                    film_grain: document.getElementById('shot_film_grain').value
+                },
+                subject: {
+                    description: document.getElementById('subject_description').value,
+                    wardrobe: document.getElementById('subject_wardrobe').value,
+                    character_motion: document.getElementById('subject_character_motion').value
+                },
+                scene: {
+                    location: document.getElementById('scene_location').value,
+                    time_of_day: document.getElementById('scene_time_of_day').value,
+                    environment: document.getElementById('scene_environment').value
+                },
+                visual_details: {
+                    action: document.getElementById('visual_details_action').value,
+                    props: document.getElementById('visual_details_props').value
+                },
+                cinematography: {
+                    lighting: document.getElementById('cinematography_lighting').value,
+                    tone: document.getElementById('cinematography_tone').value
+                },
+                audio: {
+                    ambient: document.getElementById('audio_ambient').value,
+                    sound_effects: document.getElementById('audio_sound_effects').value
+                },
+                color_palette: document.getElementById('color_palette').value,
+                dialogue: {
+                    character: document.getElementById('dialogue_character').value,
+                    line: document.getElementById('dialogue_line').value,
+                    subtitles: document.getElementById('dialogue_subtitles').checked // .checked returns true/false
+                }
+            };
+
+            // Convert the JavaScript object to a formatted JSON string (2-space indentation)
+            const jsonString = JSON.stringify(promptData, null, 2);
+
+            // Display the JSON string in the output code block
+            document.getElementById('json-output').textContent = jsonString;
+            
+            // Scroll to the output container to make it visible
+            document.getElementById('output-container').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
+```
