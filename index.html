@@ -1,336 +1,290 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cinematic Prompt Generator</title>
+    <title>Advanced Cinematic Prompt Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
-
-        :root {
-            --bg-color: #1a1a1a;
-            --surface-color: #2a2a2a;
-            --primary-color: #007bff;
-            --primary-hover: #0056b3;
-            --text-color: #e0e0e0;
-            --label-color: #a0a0a0;
-            --border-color: #444;
-            --output-bg: #111;
-        }
-
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 2rem;
         }
-
-        h1 {
-            text-align: center;
-            font-weight: 700;
-            margin-bottom: 1rem;
+        /* Custom scrollbar for better aesthetics in dark mode */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-        
-        p.subtitle {
-            text-align: center;
-            color: var(--label-color);
-            margin-top: 0;
-            margin-bottom: 3rem;
+        ::-webkit-scrollbar-track {
+            background: #2d3748; /* gray-800 */
         }
-
-        #prompt-form {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 2rem;
-        }
-
-        fieldset {
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        legend {
-            font-size: 1.2rem;
-            font-weight: 500;
-            color: var(--primary-color);
-            padding: 0 0.5rem;
-        }
-        
-        .input-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        label {
-            margin-bottom: 0.5rem;
-            color: var(--label-color);
-            font-size: 0.9rem;
-        }
-
-        input[type="text"],
-        textarea {
-            background-color: var(--bg-color);
-            border: 1px solid var(--border-color);
+        ::-webkit-scrollbar-thumb {
+            background: #4a5568; /* gray-600 */
             border-radius: 4px;
-            padding: 0.75rem;
-            color: var(--text-color);
-            width: 100%;
-            box-sizing: border-box;
-            transition: border-color 0.2s, box-shadow 0.2s;
         }
-
-        input[type="text"]:focus,
-        textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        ::-webkit-scrollbar-thumb:hover {
+            background: #718096; /* gray-500 */
         }
-        
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .button-container {
-            text-align: center;
-            margin: 3rem 0;
-        }
-
-        button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 0.8rem 2rem;
-            font-size: 1rem;
-            font-weight: 500;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        button:hover {
-            background-color: var(--primary-hover);
-        }
-
-        #output-container {
-            max-width: 1200px;
-            margin: 2rem auto;
-        }
-        
-        #output-container h2 {
-            font-weight: 500;
-        }
-
-        pre {
-            background-color: var(--output-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1.5rem;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            font-size: 0.9rem;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-        
-        @media (max-width: 900px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
     </style>
 </head>
-<body>
+<body class="bg-gray-900 text-gray-200 p-4 sm:p-8">
 
-    <h1>Cinematic Prompt Generator</h1>
-    <p class="subtitle">Fill in the details below to generate a structured JSON prompt.</p>
+    <div class="max-w-7xl mx-auto">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl sm:text-5xl font-bold text-white">Advanced Cinematic Prompt Generator</h1>
+            <p class="text-lg text-gray-400 mt-2">Craft detailed, structured prompts for advanced video generation models.</p>
+        </header>
 
-    <form id="prompt-form" onsubmit="event.preventDefault(); generateJson();">
-        <div class="form-grid">
-            <fieldset>
-                <legend>Shot</legend>
-                <div class="input-group">
-                    <label for="shot_composition">Composition</label>
-                    <input type="text" id="shot_composition" placeholder="Medium shot, 35mm lens...">
-                </div>
-                <div class="input-group">
-                    <label for="shot_camera_motion">Camera Motion</label>
-                    <input type="text" id="shot_camera_motion" placeholder="Static camera with slight handheld sway...">
-                </div>
-                <div class="input-group">
-                    <label for="shot_frame_rate">Frame Rate</label>
-                    <input type="text" id="shot_frame_rate" placeholder="24fps">
-                </div>
-                <div class="input-group">
-                    <label for="shot_film_grain">Film Grain</label>
-                    <input type="text" id="shot_film_grain" placeholder="Subtle Kodak Vision3 250D grain...">
-                </div>
-            </fieldset>
+        <form id="prompt-form" onsubmit="event.preventDefault(); generateJson();">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-            <fieldset>
-                <legend>Subject</legend>
-                <div class="input-group">
-                    <label for="subject_description">Description</label>
-                    <textarea id="subject_description" placeholder="A young woman with pale skin..."></textarea>
-                </div>
-                <div class="input-group">
-                    <label for="subject_wardrobe">Wardrobe</label>
-                    <input type="text" id="subject_wardrobe" placeholder="White dress shirt neatly tucked...">
-                </div>
-                <div class="input-group">
-                    <label for="subject_character_motion">Character Motion</label>
-                    <input type="text" id="subject_character_motion" placeholder="She raises both hands playfully...">
-                </div>
-            </fieldset>
-            
-            <fieldset>
-                <legend>Scene</legend>
-                <div class="input-group">
-                    <label for="scene_location">Location</label>
-                    <textarea id="scene_location" placeholder="Minimalist indoor studio hallway..."></textarea>
-                </div>
-                <div class="input-group">
-                    <label for="scene_time_of_day">Time of Day</label>
-                    <input type="text" id="scene_time_of_day" placeholder="Midday with soft diffused light">
-                </div>
-                <div class="input-group">
-                    <label for="scene_environment">Environment</label>
-                    <input type="text" id="scene_environment" placeholder="Clean neutral-toned space...">
-                </div>
-            </fieldset>
-            
-            <fieldset>
-                <legend>Visual Details</legend>
-                <div class="input-group">
-                    <label for="visual_details_action">Action</label>
-                    <textarea id="visual_details_action" placeholder="As the woman strikes her playful claw pose..."></textarea>
-                </div>
-                <div class="input-group">
-                    <label for="visual_details_props">Props</label>
-                    <input type="text" id="visual_details_props" placeholder="Visible door with white 'DO NOT OPEN' label...">
-                </div>
-            </fieldset>
-            
-            <fieldset>
-                <legend>Cinematography & Audio</legend>
-                 <div class="input-group">
-                    <label for="cinematography_lighting">Lighting</label>
-                    <input type="text" id="cinematography_lighting" placeholder="Soft top-lighting with a hint of bounce...">
-                </div>
-                <div class="input-group">
-                    <label for="cinematography_tone">Tone</label>
-                    <input type="text" id="cinematography_tone" placeholder="Lighthearted, whimsical, charming...">
-                </div>
-                 <div class="input-group">
-                    <label for="audio_ambient">Ambient Sound</label>
-                    <input type="text" id="audio_ambient" placeholder="Soft studio room tone, faint echo...">
-                </div>
-                <div class="input-group">
-                    <label for="audio_sound_effects">Sound Effects</label>
-                    <input type="text" id="audio_sound_effects" placeholder="Light chime, soft digital pop...">
-                </div>
-            </fieldset>
+                <!-- General Settings -->
+                <fieldset class="bg-gray-800 border border-gray-700 rounded-lg p-6 flex flex-col gap-4">
+                    <legend class="text-xl font-medium text-indigo-400 px-2">General</legend>
+                    <div class="input-group">
+                        <label for="model" class="block text-sm font-medium text-gray-400 mb-1">Model</label>
+                        <input type="text" id="model" value="Veo3-fast" class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div class="input-group">
+                        <label for="duration" class="block text-sm font-medium text-gray-400 mb-1">Duration (seconds)</label>
+                        <input type="number" id="duration" value="8" class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div class="input-group">
+                        <label for="aspect_ratio" class="block text-sm font-medium text-gray-400 mb-1">Aspect Ratio</label>
+                        <input type="text" id="aspect_ratio" value="16:9" class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </fieldset>
 
-            <fieldset>
-                <legend>Color & Dialogue</legend>
-                 <div class="input-group">
-                    <label for="color_palette">Color Palette</label>
-                    <input type="text" id="color_palette" placeholder="Neutral grays with pops of black and white...">
-                </div>
-                 <div class="input-group">
-                    <label for="dialogue_character">Dialogue Character</label>
-                    <input type="text" id="dialogue_character" placeholder="Woman">
-                </div>
-                <div class="input-group">
-                    <label for="dialogue_line">Dialogue Line</label>
-                    <input type="text" id="dialogue_line" placeholder='(cheerfully, winking) "Rawr! I\'m pixel-perfect!"'>
-                </div>
-                <div class="checkbox-group">
-                    <label for="dialogue_subtitles">Subtitles Enabled</label>
-                    <input type="checkbox" id="dialogue_subtitles">
-                </div>
-            </fieldset>
+                <!-- Shot -->
+                <fieldset class="bg-gray-800 border border-gray-700 rounded-lg p-6 flex flex-col gap-4">
+                    <legend class="text-xl font-medium text-indigo-400 px-2">Shot</legend>
+                    <div class="input-group">
+                        <label for="shot_composition" class="block text-sm font-medium text-gray-400 mb-1">Composition</label>
+                        <input type="text" id="shot_composition" value="locked medium-wide, 35 mm, eye-level" class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div class="input-group">
+                        <label for="shot_camera_motion" class="block text-sm font-medium text-gray-400 mb-1">Camera Motion</label>
+                        <input type="text" id="shot_camera_motion" value="static tripod, no drift" class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div class="input-group">
+                        <label for="shot_frame_rate" class="block text-sm font-medium text-gray-400 mb-1">Frame Rate</label>
+                        <input type="text" id="shot_frame_rate" value="24 fps" class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                     <div class="input-group">
+                        <label for="shot_film_grain" class="block text-sm font-medium text-gray-400 mb-1">Film Grain</label>
+                        <input type="number" step="0.01" id="shot_film_grain" value="0.02" class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </fieldset>
+
+                <!-- Scene -->
+                <fieldset class="bg-gray-800 border border-gray-700 rounded-lg p-6 flex flex-col gap-4">
+                    <legend class="text-xl font-medium text-indigo-400 px-2">Scene</legend>
+                     <div class="input-group">
+                        <label for="scene_setting" class="block text-sm font-medium text-gray-400 mb-1">Setting</label>
+                        <textarea id="scene_setting" rows="3" class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">cheerful nursery with pastel walls, hand-painted toys, sunlit bay window</textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="scene_time_of_day" class="block text-sm font-medium text-gray-400 mb-1">Time of Day</label>
+                        <input type="text" id="scene_time_of_day" value="mid-morning daylight" class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div class="input-group">
+                        <label for="scene_atmosphere" class="block text-sm font-medium text-gray-400 mb-1">Atmosphere</label>
+                        <input type="text" id="scene_atmosphere" value="whimsical, airy, soft bounce light" class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </fieldset>
+
+                <!-- Subject & Visuals -->
+                <fieldset class="bg-gray-800 border border-gray-700 rounded-lg p-6 flex flex-col gap-4 lg:col-span-2">
+                    <legend class="text-xl font-medium text-indigo-400 px-2">Subject & Visuals</legend>
+                    <div class="input-group">
+                        <label for="subject_description" class="block text-sm font-medium text-gray-400 mb-1">Subject Description</label>
+                        <textarea id="subject_description" rows="3" class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">smiling nanny-inspired female singer, early-30s, vintage teal dress with white collar, classic black umbrella</textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="visual_details_action_sequence" class="block text-sm font-medium text-gray-400 mb-1">Action Sequence (one action per line)</label>
+                        <textarea id="visual_details_action_sequence" rows="4" placeholder="Enter each action on a new line..." class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">0–2 s — singer heel-to-toe tap twice, pops umbrella open above shoulder
+2–6 s — performs classic Mary-Poppins two-step skip with gentle umbrella twirl and playful hop-pivot
+6–8 s — finishes with flourish spin, umbrella tip-down curtsey, smiles straight to camera</textarea>
+                    </div>
+                </fieldset>
+
+                <!-- Cinematography -->
+                 <fieldset class="bg-gray-800 border border-gray-700 rounded-lg p-6 flex flex-col gap-4">
+                    <legend class="text-xl font-medium text-indigo-400 px-2">Cinematography</legend>
+                     <div class="input-group">
+                        <label for="cinematography_lighting" class="block text-sm font-medium text-gray-400 mb-1">Lighting</label>
+                        <textarea id="cinematography_lighting" rows="3" class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">key: soft overhead bounce; fill: practical lamp off-camera left; back: window rim glow</textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="cinematography_color_palette" class="block text-sm font-medium text-gray-400 mb-1">Color Palette</label>
+                        <input type="text" id="cinematography_color_palette" value="pastel mint • butter yellow • sky blue • warm rose" class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </fieldset>
+
+                <!-- Audio -->
+                <fieldset class="bg-gray-800 border border-gray-700 rounded-lg p-6 flex flex-col gap-4 lg:col-span-2">
+                    <legend class="text-xl font-medium text-indigo-400 px-2">Audio</legend>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="input-group">
+                            <label for="audio_music_style" class="block text-sm font-medium text-gray-400 mb-1">Music Style</label>
+                            <input type="text" id="audio_music_style" value="upbeat orchestral show-tune (piano, piccolo, brass stabs)" class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div class="input-group">
+                            <label for="audio_bpm" class="block text-sm font-medium text-gray-400 mb-1">BPM</label>
+                            <input type="number" id="audio_bpm" value="132" class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div class="input-group">
+                            <label for="audio_voice" class="block text-sm font-medium text-gray-400 mb-1">Voice</label>
+                            <input type="text" id="audio_voice" value="bright mezzo-soprano" class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="audio_lyrics" class="block text-sm font-medium text-gray-400 mb-1">Lyrics (one line of lyrics per line)</label>
+                        <textarea id="audio_lyrics" rows="3" class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">Supercalifragilisticexpialidocious — sing it bright today!
+Even though it twists the tongue, we dance the clouds away!</textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="audio_sync" class="block text-sm font-medium text-gray-400 mb-1">Sync</label>
+                        <input type="text" id="audio_sync" value="line 1 frames 1-96; line 2 frames 97-192" class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </fieldset>
+
+                <!-- Visual Rules -->
+                <fieldset class="bg-gray-800 border border-gray-700 rounded-lg p-6 flex flex-col gap-4">
+                    <legend class="text-xl font-medium text-indigo-400 px-2">Visual Rules</legend>
+                    <div class="input-group">
+                        <label for="visual_rules_safety" class="block text-sm font-medium text-gray-400 mb-1">Safety</label>
+                        <input type="text" id="visual_rules_safety" value="no trademarks, no brand logos" class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div class="flex items-center mt-2">
+                        <input id="visual_rules_disable_auto_tone" type="checkbox" checked class="h-4 w-4 rounded border-gray-500 bg-gray-700 text-indigo-600 focus:ring-indigo-500">
+                        <label for="visual_rules_disable_auto_tone" class="ml-2 block text-sm text-gray-300">Disable Auto Tone</label>
+                    </div>
+                </fieldset>
+
+            </div>
+
+            <div class="text-center my-12">
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50">
+                    Generate JSON Prompt
+                </button>
+            </div>
+        </form>
+
+        <div id="output-container" class="max-w-7xl mx-auto hidden">
+            <h2 class="text-2xl font-semibold text-white mb-4">Generated JSON</h2>
+            <div class="relative">
+                <pre class="bg-gray-900 border border-gray-700 rounded-lg p-6 text-gray-300 text-sm overflow-x-auto"><code id="json-output"></code></pre>
+                <button id="copy-button" class="absolute top-4 right-4 bg-gray-700 hover:bg-gray-600 text-gray-300 font-semibold py-1 px-3 rounded-md text-sm">Copy</button>
+            </div>
         </div>
-        
-        <div class="button-container">
-            <button type="submit">Generate JSON Prompt</button>
-        </div>
-    </form>
-
-    <div id="output-container">
-        <h2>Generated JSON</h2>
-        <pre><code id="json-output">// Your generated JSON will appear here...</code></pre>
     </div>
 
     <script>
+        // Utility function to get value from an element
+        const getValue = id => document.getElementById(id).value;
+        // Utility function to get a number value
+        const getNumber = id => parseFloat(document.getElementById(id).value);
+        // Utility function to get a boolean value from a checkbox
+        const getChecked = id => document.getElementById(id).checked;
+        // Utility function to get an array from a textarea (split by new lines)
+        const getArrayFromTextArea = id => {
+            const rawText = document.getElementById(id).value;
+            return rawText.split('\\n').map(line => line.trim()).filter(line => line.length > 0);
+        };
+
         function generateJson() {
-            // Create a structured JavaScript object by getting values from the form inputs
+            // Create the structured JavaScript object from form inputs
             const promptData = {
+                model: getValue('model'),
+                duration: getNumber('duration'),
+                aspect_ratio: getValue('aspect_ratio'),
                 shot: {
-                    composition: document.getElementById('shot_composition').value,
-                    camera_motion: document.getElementById('shot_camera_motion').value,
-                    frame_rate: document.getElementById('shot_frame_rate').value,
-                    film_grain: document.getElementById('shot_film_grain').value
-                },
-                subject: {
-                    description: document.getElementById('subject_description').value,
-                    wardrobe: document.getElementById('subject_wardrobe').value,
-                    character_motion: document.getElementById('subject_character_motion').value
+                    composition: getValue('shot_composition'),
+                    camera_motion: getValue('shot_camera_motion'),
+                    frame_rate: getValue('shot_frame_rate'),
+                    film_grain: getNumber('shot_film_grain')
                 },
                 scene: {
-                    location: document.getElementById('scene_location').value,
-                    time_of_day: document.getElementById('scene_time_of_day').value,
-                    environment: document.getElementById('scene_environment').value
+                    setting: getValue('scene_setting'),
+                    time_of_day: getValue('scene_time_of_day'),
+                    atmosphere: getValue('scene_atmosphere')
+                },
+                subject: {
+                    description: getValue('subject_description')
                 },
                 visual_details: {
-                    action: document.getElementById('visual_details_action').value,
-                    props: document.getElementById('visual_details_props').value
+                    action: {
+                        sequence: getArrayFromTextArea('visual_details_action_sequence')
+                    }
                 },
                 cinematography: {
-                    lighting: document.getElementById('cinematography_lighting').value,
-                    tone: document.getElementById('cinematography_tone').value
+                    lighting: getValue('cinematography_lighting'),
+                    color_palette: getValue('cinematography_color_palette')
                 },
                 audio: {
-                    ambient: document.getElementById('audio_ambient').value,
-                    sound_effects: document.getElementById('audio_sound_effects').value
+                    music_style: getValue('audio_music_style'),
+                    bpm: getNumber('audio_bpm'),
+                    voice: getValue('audio_voice'),
+                    lyrics: getArrayFromTextArea('audio_lyrics'),
+                    sync: getValue('audio_sync')
                 },
-                color_palette: document.getElementById('color_palette').value,
-                dialogue: {
-                    character: document.getElementById('dialogue_character').value,
-                    line: document.getElementById('dialogue_line').value,
-                    subtitles: document.getElementById('dialogue_subtitles').checked // .checked returns true/false
+                visual_rules: {
+                    disable_auto_tone: getChecked('visual_rules_disable_auto_tone'),
+                    safety: getValue('visual_rules_safety')
                 }
             };
 
-            // Convert the JavaScript object to a formatted JSON string (2-space indentation)
+            // Convert the object to a formatted JSON string
             const jsonString = JSON.stringify(promptData, null, 2);
 
-            // Display the JSON string in the output code block
-            document.getElementById('json-output').textContent = jsonString;
-            
-            // Scroll to the output container to make it visible
-            document.getElementById('output-container').scrollIntoView({ behavior: 'smooth' });
+            // Display the JSON string and the output container
+            const outputElement = document.getElementById('json-output');
+            outputElement.textContent = jsonString;
+            document.getElementById('output-container').classList.remove('hidden');
+
+            // Scroll to the output
+            document.getElementById('output-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
+
+        // Add copy-to-clipboard functionality
+        document.getElementById('copy-button').addEventListener('click', () => {
+            const jsonOutput = document.getElementById('json-output').textContent;
+            const button = document.getElementById('copy-button');
+            
+            // Use the Clipboard API
+            navigator.clipboard.writeText(jsonOutput).then(() => {
+                // Success feedback
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                }, 2000);
+            }).catch(err => {
+                // Fallback for older browsers or iframes
+                try {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = jsonOutput;
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    // Success feedback
+                    button.textContent = 'Copied!';
+                    setTimeout(() => {
+                        button.textContent = 'Copy';
+                    }, 2000);
+
+                } catch (e) {
+                    console.error('Failed to copy text: ', e);
+                    button.textContent = 'Error';
+                     setTimeout(() => {
+                        button.textContent = 'Copy';
+                    }, 2000);
+                }
+            });
+        });
     </script>
+
 </body>
 </html>
-```
